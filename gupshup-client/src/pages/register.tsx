@@ -12,6 +12,7 @@ const Register = () => {
     email: "",
     username: "",
     password: "",
+    role: "",
   });
 
   // Access the register function from the authentication context
@@ -29,6 +30,20 @@ const Register = () => {
 
   // Handle user registration
   const handleRegister = async () => await register(data);
+
+  const assignRoleTrainer = () => {
+    setData({
+      ...data,
+      role: "trainer",
+    });
+  };
+
+  const assignRoleStudent = () => {
+    setData({
+      ...data,
+      role: "student",
+    });
+  };
 
   return (
     // Register form UI
@@ -57,6 +72,24 @@ const Register = () => {
           value={data.password}
           onChange={handleDataChange("password")}
         />
+        {/* Roles Button */}
+        <div className="text-2xl">Enter the role: </div>
+        <div className="roles flex justify-center">
+          <Button
+            fullWidth
+            onClick={assignRoleTrainer}
+            className="mx-5"
+          >
+            Trainer
+          </Button>
+          <Button
+            fullWidth
+            onClick={assignRoleStudent}
+          >
+            Student
+          </Button>
+        </div>
+
         {/* Register button */}
         <Button
           fullWidth

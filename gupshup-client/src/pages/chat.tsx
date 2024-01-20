@@ -168,6 +168,7 @@ const ChatPage = () => {
   const handleOnMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Update the message state with the current input value
     setMessage(e.target.value);
+    // setMessage(student.answer1[0]);
 
     // If socket doesn't exist or isn't connected, exit the function
     if (!socket || !isConnected) return;
@@ -393,10 +394,10 @@ const ChatPage = () => {
                 // If there's a localSearchQuery, filter chats that contain the query in their metadata title
                 localSearchQuery
                   ? getChatObjectMetadata(chat, user!)
-                      .title?.toLocaleLowerCase()
-                      ?.includes(localSearchQuery)
+                    .title?.toLocaleLowerCase()
+                    ?.includes(localSearchQuery)
                   : // If there's no localSearchQuery, include all chats
-                    true
+                  true
               )
               .map((chat) => {
                 return (
@@ -451,10 +452,10 @@ const ChatPage = () => {
                                 i === 0
                                   ? "left-0 z-30"
                                   : i === 1
-                                  ? "left-2 z-20"
-                                  : i === 2
-                                  ? "left-4 z-10"
-                                  : ""
+                                    ? "left-2 z-20"
+                                    : i === 2
+                                      ? "left-4 z-10"
+                                      : ""
                               )}
                             />
                           );
