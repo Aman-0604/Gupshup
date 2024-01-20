@@ -1,17 +1,17 @@
 import mongoose, { Schema } from "mongoose";
 
-const questionSchema = new Schema({
-    type: [String],
-});
+// const questionSchema = new Schema({
+//     type: [String],
+// });
 
 const optionSchema = new Schema(
     {
-        trainer: {
-            type: [questionSchema],
-        },
-        student: {
-            type: [questionSchema],
-        },
+        trainer: [
+            [String],
+        ],
+        student: [
+            [String],
+        ],
     },
     { timestamps: true }
 );

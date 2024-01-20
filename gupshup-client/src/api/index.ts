@@ -32,6 +32,7 @@ const registerUser = (data: {
   email: string;
   password: string;
   username: string;
+  role: string;
 }) => {
   return apiClient.post("/users/register", data);
 };
@@ -47,6 +48,10 @@ const getAvailableUsers = () => {
 const getUserChats = () => {
   return apiClient.get(`/chat-app/chats`);
 };
+
+const getOptions = () => {
+  return apiClient.get(`/chat-app/options`);
+}
 
 const createUserChat = (receiverId: string) => {
   return apiClient.post(`/chat-app/chats/c/${receiverId}`);
@@ -112,4 +117,5 @@ export {
   removeParticipantFromGroup,
   sendMessage,
   updateGroupName,
+  getOptions,
 };

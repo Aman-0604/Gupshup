@@ -1,6 +1,5 @@
 import {
   PaperAirplaneIcon,
-  PaperClipIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid";
 import { useEffect, useRef, useState } from "react";
@@ -9,7 +8,8 @@ import AddChatModal from "../components/chat/AddChatModal";
 import ChatItem from "../components/chat/ChatItem";
 import MessageItem from "../components/chat/MessageItem";
 import Typing from "../components/chat/Typing";
-import Input from "../components/Input";
+// import Options from "../components/Options";
+// import Input from "../components/Input";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import {
@@ -22,6 +22,8 @@ import {
   getChatObjectMetadata,
   requestHandler,
 } from "../utils";
+import { getOptions } from "../api";
+import { OptionInterface } from "../interfaces/option";
 
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
@@ -38,6 +40,8 @@ const ChatPage = () => {
   // Import the 'useAuth' and 'useSocket' hooks from their respective contexts
   const { user } = useAuth();
   const { socket } = useSocket();
+  const arrayType = user.role;
+  const loggedInUserId = user._id;
 
   // Create a reference using 'useRef' to hold the currently selected chat.
   // 'useRef' is used here because it ensures that the 'currentChat' value within socket event callbacks
@@ -53,6 +57,7 @@ const ChatPage = () => {
   const [openAddChat, setOpenAddChat] = useState(false); // To control the 'Add Chat' modal
   const [loadingChats, setLoadingChats] = useState(false); // To indicate loading of chats
   const [loadingMessages, setLoadingMessages] = useState(false); // To indicate loading of messages
+  const [loadingOptions, setLoadingOptions] = useState(false); // To indicate loading of options
 
   const [chats, setChats] = useState<ChatListItemInterface[]>([]); // To store user's chats
   const [messages, setMessages] = useState<ChatMessageInterface[]>([]); // To store chat messages
@@ -67,6 +72,11 @@ const ChatPage = () => {
   const [localSearchQuery, setLocalSearchQuery] = useState(""); // For local search functionality
 
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]); // To store files attached to messages
+
+  const [options, setOptions] = useState<OptionInterface[] | null>(null);
+
+  const [selectedOption, setSelectedOption] = useState('');
+  const [userMessageCount, setUserMessageCount] = useState(0);
 
   /**
    *  A  function to update the last message of a specified chat to update the chat list
@@ -134,6 +144,33 @@ const ChatPage = () => {
     );
   };
 
+  const getOptionsData = async () => {
+    requestHandler(
+      async () => await getOptions(),
+      setLoadingOptions,
+      (res) => {
+        const { data } = res;
+        setOptions(data[0] || []);
+      },
+      alert
+    );
+  };
+
+  const handleOptionChange = (e) => {
+    setSelectedOption(e.target.value);
+    setMessage(e.target.value);
+    console.log(e.target.value);
+  };
+
+  const getUserMessagesCount = () => {
+    // Filter messages sent by the logged-in user
+    const userMessages = messages.filter(
+      (message) => message.sender._id === loggedInUserId
+    );
+
+    setUserMessageCount(userMessages.length);
+  }
+
   // Function to send a chat message
   const sendChatMessage = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
@@ -142,6 +179,7 @@ const ChatPage = () => {
     // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
 
+    // optionsComputation();
     // Use the requestHandler to send the message and handle potential response or error
     await requestHandler(
       // Try to send the chat message with the given message and attached files
@@ -158,6 +196,7 @@ const ChatPage = () => {
         setAttachedFiles([]); // Clear the list of attached files
         setMessages((prev) => [res.data, ...prev]); // Update messages in the UI
         updateChatLastMessage(currentChat.current?._id || "", res.data); // Update the last message in the chat
+        getUserMessagesCount();
       },
 
       // If there's an error during the message sending process, raise an alert
@@ -167,8 +206,9 @@ const ChatPage = () => {
 
   const handleOnMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Update the message state with the current input value
-    setMessage(e.target.value);
-    // setMessage(student.answer1[0]);
+    // setMessage(e.target.value);
+    // setMessage(options[0].trainer[0][1]);
+    // console.log(options[0].trainer[0][1]);
 
     // If socket doesn't exist or isn't connected, exit the function
     if (!socket || !isConnected) return;
@@ -303,9 +343,11 @@ const ChatPage = () => {
       // If the socket connection exists, emit an event to join the specific chat using its ID.
       socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
       // Fetch the messages for the current chat.
+      getOptionsData();
       getMessages();
+      // getUserMessagesCount();
     }
-    // An empty dependency array ensures this useEffect runs only once, similar to componentDidMount.
+    // An empty dependency array ensures this useEffect runs only once.
   }, []);
 
   // This useEffect handles the setting up and tearing down of socket event listeners.
@@ -364,17 +406,16 @@ const ChatPage = () => {
           getChats();
         }}
       />
-
       <div className="w-full justify-between items-stretch h-screen flex flex-shrink-0">
         <div className="w-1/3 relative ring-white overflow-y-auto px-4">
-          <div className="z-10 w-full sticky top-0 bg-dark py-4 flex justify-between items-center gap-4">
-            <Input
+          <div className="z-10 w-full sticky top-0 bg-dark py-4 flex justify-center items-center gap-4">
+            {/* <Input
               placeholder="Search user or group..."
               value={localSearchQuery}
               onChange={(e) =>
                 setLocalSearchQuery(e.target.value.toLowerCase())
               }
-            />
+            /> */}
             <button
               onClick={() => setOpenAddChat(true)}
               className="rounded-xl border-none bg-primary text-white py-4 px-5 flex flex-shrink-0"
@@ -555,23 +596,44 @@ const ChatPage = () => {
                     }
                   }}
                 />
-                <label
+                {/* <label
                   htmlFor="attachments"
                   className="p-4 rounded-full bg-dark hover:bg-secondary"
-                >
-                  <PaperClipIcon className="w-6 h-6" />
-                </label>
+                > */}
+                {/* <PaperClipIcon className="w-6 h-6" /> */}
+                {/* </label> */}
 
-                <Input
-                  placeholder="Message"
-                  value={message}
-                  onChange={handleOnMessageChange}
-                  onKeyDown={(e) => {
+                {/* <Input placeholder="Message" value={message} onChange={handleOnMessageChange} onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       sendChatMessage();
                     }
                   }}
-                />
+                /> */}
+
+                {/* <select value={selectedOption} onChange={handleOptionChange}>
+                  <option value="">Select an option</option>
+                  {(arrayType === 'student' ? student[userMessageCount % 3] : trainer[userMessageCount % 3]).map((subOption, index) => (
+                    <option key={index} value={subOption}>
+                      {subOption}
+                    </option>
+                  ))}
+                </select> */}
+
+                {loadingOptions ? (
+                  <p>Loading options...</p>
+                ) : options ? (
+                  <select value={selectedOption} onChange={handleOptionChange}>
+                    <option value="">Select an option</option>
+                    {(arrayType === 'student' ? options.student[userMessageCount % 3] : options.trainer[userMessageCount % 3]).map((subOption, index) => (
+                      <option key={index} value={subOption}>
+                        {subOption}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p>No options available.</p>
+                )}
+
                 <button
                   onClick={sendChatMessage}
                   disabled={!message && attachedFiles.length <= 0}

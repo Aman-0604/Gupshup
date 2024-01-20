@@ -1,4 +1,4 @@
-import { Dialog, Switch, Transition } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import {
   UserGroupIcon,
   XCircleIcon,
@@ -10,7 +10,7 @@ import { ChatListItemInterface } from "../../interfaces/chat";
 import { UserInterface } from "../../interfaces/user";
 import { classNames, requestHandler } from "../../utils";
 import Button from "../Button";
-import Input from "../Input";
+// import Input from "../Input";
 import Select from "../Select";
 
 const AddChatModal: React.FC<{
@@ -175,7 +175,7 @@ const AddChatModal: React.FC<{
                   </div>
                 </div>
                 <div>
-                  <Switch.Group as="div" className="flex items-center my-5">
+                  {/* <Switch.Group as="div" className="flex items-center my-5">
                     <Switch
                       checked={isGroupChat}
                       onChange={setIsGroupChat}
@@ -204,8 +204,8 @@ const AddChatModal: React.FC<{
                         Is it a group chat?
                       </span>{" "}
                     </Switch.Label>
-                  </Switch.Group>
-                  {isGroupChat ? (
+                  </Switch.Group> */}
+                  {/* {isGroupChat ? (
                     <div className="my-5">
                       <Input
                         placeholder={"Enter a group name..."}
@@ -215,7 +215,7 @@ const AddChatModal: React.FC<{
                         }}
                       />
                     </div>
-                  ) : null}
+                  ) : null} */}
                   <div className="my-5">
                     <Select
                       placeholder={
