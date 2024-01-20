@@ -41,6 +41,7 @@ const ChatPage = () => {
   const { user } = useAuth();
   const { socket } = useSocket();
   const arrayType = user.role;
+  console.log(arrayType)
   const loggedInUserId = user._id;
 
   // Create a reference using 'useRef' to hold the currently selected chat.
@@ -631,7 +632,7 @@ const ChatPage = () => {
                     ))}
                   </select>
                 ) : (
-                  <p>No options available.</p>
+                  <p>Refresh the chat once.</p>
                 )}
 
                 <button
