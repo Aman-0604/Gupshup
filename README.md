@@ -13,7 +13,7 @@ npm run server
 ## Running Client (Using React made via Vite) 
 ```
 cd gupshup-client
-npm I
+npm i
 copy data from .env.sample to .env
 npm run dev
 ```
